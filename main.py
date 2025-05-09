@@ -30,7 +30,7 @@ LETTERS_FREQUENCIES = {
 }
 
 
-ALPHABET = ''.join(LETTERS_FREQUENCIES.keys())
+ALPHABET = 'ABCDEFGHIKLMNOPQRSTUVWXYZẞ'
 MATRIX = None
 
 
@@ -57,16 +57,19 @@ def encode_symbol_vigenere(s1: str, s2: str) -> str:
 
 def encode_text_vigenere(text: str, password: str) -> str:
     '''
-        Gibt nach Vigenere verschlüsselten Text aus. Die im ALPHABET nicht enthaltene Symbole werden ignoriert.
+        Gibt nach Vigenere verschlüsselten Text aus. Die im ALPHABET nicht enthaltene Symbole werden 'übersprungen'.
     '''
     encoded = [*text]
+    non_alphabetic_symbols_count = 0
     for i in range(len(text)):
         symbol = text[i]
         if symbol.upper() in ALPHABET:
             symbol = encode_symbol_vigenere(
                 symbol,
-                password[i % len(password)],
+                password[(i - non_alphabetic_symbols_count) % len(password)],
             )
+        else:
+            non_alphabetic_symbols_count += 1
         encoded[i] = symbol
     return ''.join(encoded)
 
@@ -77,6 +80,7 @@ def find_password_length(text: str):
 
 if __name__ == '__main__':
     fill_vigenere_matrix()
-    text = 'ABCD'
-    password = 'C'
-    print(encode_text_vigenere(text, password))
+    text = 'Das Leben in der Stadt und auf dem Land unterscheidet sich in vielen Aspekten. In der Stadt gibt es meist mehr Moeglichkeiten: Arbeitsplaetze, Bildungseinrichtungen, kulturelle Angebote und eine bessere Infrastruktur. Viele Menschen schaetzen das Stadtleben wegen seiner Vielfalt und dem schnellen Zugang zu allem, was man im Alltag braucht. Gleichzeitig kann es in der Stadt auch stressig, laut und ueberfuellt sein. Auf dem Land hingegen ist das Leben ruhiger. Die Menschen kennen sich oft untereinander, und die Natur ist meist direkt vor der Haustuer. Besonders Familien mit Kindern oder aeltere Menschen ziehen gerne aufs Land, weil es dort weniger Verkehr, mehr Platz und eine engere Gemeinschaft gibt. Allerdings kann es schwieriger sein, ohne Auto mobil zu bleiben, und viele Dienstleistungen oder Einkaufmoeglichkeiten sind weiter entfernt. Beide Lebensformen haben ihre Vor- und Nachteile. Letztlich haengt die Entscheidung, wo man leben moechte, stark von den persoenlichen Beduerfnissen und Prioritaeten ab. Waehrend manche das pulsierende Leben der Stadt lieben, bevorzugen andere die Ruhe und Naturverbundenheit des Landlebens. Eine ideale Loesung koennte auch eine Mischung aus beidem sein – zum Beispiel in einer kleineren Stadt oder einem gut angebundenen Vorort.'
+    password = 'ABCD'
+    encoded_text = encode_text_vigenere(text, password)
+    print(encoded_text)
