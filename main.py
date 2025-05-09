@@ -1,11 +1,43 @@
-from string import ascii_uppercase
+# Ä = AE, Ü = UE, Ö = OE
+LETTERS_FREQUENCIES = {
+    "E": 0.1740,
+    "N": 0.0978,
+    "I": 0.0755,
+    "S": 0.0727,
+    "R": 0.0700,
+    "A": 0.0651,
+    "T": 0.0615,
+    "D": 0.0508,
+    "H": 0.0476,
+    "U": 0.0435,
+    "L": 0.0344,
+    "C": 0.0306,
+    "G": 0.0301,
+    "M": 0.0253,
+    "O": 0.0251,
+    "B": 0.0189,
+    "W": 0.0189,
+    "F": 0.0166,
+    "K": 0.0121,
+    "Z": 0.0113,
+    "P": 0.0079,
+    "V": 0.0067,
+    "ẞ": 0.0031,
+    "J": 0.0027,
+    "Y": 0.0004,
+    "X": 0.0003,
+    "Q": 0.0002
+}
 
 
-ALPHABET = ascii_uppercase
+ALPHABET = ''.join(LETTERS_FREQUENCIES.keys())
 MATRIX = None
 
 
 def fill_vigenere_matrix():
+    '''
+        Füllt die globale Variable MATRIX (Vigenere-Tabelle)
+    '''
     global MATRIX
     MATRIX = []
     for i in range(len(ALPHABET)):
@@ -14,17 +46,19 @@ def fill_vigenere_matrix():
 
 def encode_symbol_vigenere(s1: str, s2: str) -> str:
     '''
-        Returns symbol in uppercase.
+        Gibt nach Vigenere verschlüsseltes Symbol aus (Großgeschrieben).
     '''
-    # todo: throw error
     if s1.upper() not in ALPHABET or s2.upper() not in ALPHABET:
-        return ''
+        raise VelueError('Es gibt einen Buchstaben, der nicht im ALPHABET enthalten!')
     i1 = ALPHABET.index(s1.upper())
     i2 = ALPHABET.index(s2.upper())
     return MATRIX[i1][i2]
 
 
 def encode_text_vigenere(text: str, password: str) -> str:
+    '''
+        Gibt nach Vigenere verschlüsselten Text aus. Die im ALPHABET nicht enthaltene Symbole werden ignoriert.
+    '''
     encoded = [*text]
     for i in range(len(text)):
         symbol = text[i]
@@ -35,6 +69,10 @@ def encode_text_vigenere(text: str, password: str) -> str:
             )
         encoded[i] = symbol
     return ''.join(encoded)
+
+
+def find_password_length(text: str):
+    pass
 
 
 if __name__ == '__main__':
