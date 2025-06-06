@@ -191,10 +191,3 @@ def decode_text_vigenere(text: str, password: str) -> str:
             non_alphabetic_symbols_count += 1
         decoded[i] = symbol
     return ''.join(decoded)
-
-
-def get_trimmed_text(text: str) -> str:
-    '''
-        Gibt die ersten 80 Symbolen aus dem Text aus.
-    '''
-    return text[:80] + '...' if len(text) > 80 else text
