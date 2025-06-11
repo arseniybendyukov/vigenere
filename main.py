@@ -15,6 +15,7 @@ from vigenere import (
 )
 
 
+# Der Name der Datei, in die der entschlüsselte Text gespeichert wird 
 ENTSCHLUESSELT_DATEINAME = 'entschluesselt.txt'
 
 
