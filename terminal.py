@@ -2,92 +2,96 @@ import tkinter
 from tkinter import filedialog
 
 
-class ANSI_CODES:
-  HEADER = '\033[96m'
-  BACKGROUND = '\033[47m'
-  GREEN = '\033[92m'
-  YELLOW = '\033[93m'
-  RED = '\033[91m'
-  UNDERLINE = '\033[4m'
-  ENDC = '\033[0m'
+class ANSI:
+  TITEL = '\033[96m'
+  HINTERGRUND = '\033[47m'
+  GRUEN = '\033[92m'
+  GELB = '\033[93m'
+  ROT = '\033[91m'
+  UNTERSTRICH = '\033[4m'
+  ENDE = '\033[0m'
 
 
-def header(text: str) -> str:
-  return f'{ANSI_CODES.HEADER}{text}{ANSI_CODES.ENDC}'
+def titel(text: str) -> str:
+  return f'{ANSI.TITEL}{text}{ANSI.ENDE}'
 
 
-def background(text: str) -> str:
-  return f'{ANSI_CODES.BACKGROUND}{text}{ANSI_CODES.ENDC}'
+def hintergrund(text: str) -> str:
+  return f'{ANSI.HINTERGRUND}{text}{ANSI.ENDE}'
 
 
-def green(text: str) -> str:
-  return f'{ANSI_CODES.GREEN}{text}{ANSI_CODES.ENDC}'
+def gruen(text: str) -> str:
+  return f'{ANSI.GRUEN}{text}{ANSI.ENDE}'
 
 
-def purple(text: str) -> str:
-  return f'{ANSI_CODES.YELLOW}{text}{ANSI_CODES.ENDC}'
+def gelb(text: str) -> str:
+  return f'{ANSI.GELB}{text}{ANSI.ENDE}'
 
 
-def red(text: str) -> str:
-  return f'{ANSI_CODES.RED}{text}{ANSI_CODES.ENDC}'
+def rot(text: str) -> str:
+  return f'{ANSI.ROT}{text}{ANSI.ENDE}'
 
 
-def underline(text: str) -> str:
-  return f'{ANSI_CODES.UNDERLINE}{text}{ANSI_CODES.ENDC}'
+def unterstrich(text: str) -> str:
+  return f'{ANSI.UNTERSTRICH}{text}{ANSI.ENDE}'
 
 
-def yes_or_no_interrupt(placeholder: str):
+def ja_oder_nein_unterbrechen(platzhalter: str):
   while True:
-    answer = input(f'{placeholder} j/n: ')
-    if answer == 'j':
+    antwort = input(f'{platzhalter} j/n: ')
+    if antwort == 'j':
       return
-    if answer == 'n':
+    if antwort == 'n':
       raise KeyboardInterrupt
-    print(red('Bitte geben Sie entweder \'j\' oder \'n\' ein.'))
+    print(rot('Bitte geben Sie entweder \'j\' oder \'n\' ein.'))
 
 
-def greet_user():
-  print(header('Hallo! Bitte wählen Sie eine Text-Datei, die Sie entschlüsseln wollen.'))
+def benutzer_begruessen():
+  print(titel('Hallo! Bitte wählen Sie eine Text-Datei, die Sie entschlüsseln wollen.'))
 
 
-def show_successfull_decoding(password: str, filename: str):
-  print(f'Prima! Passwort: \'{green(password)}\'. Der entschlüsselte Text wurde in \'{underline(filename)}\' gespeichert.')
-
-
-def apologize():
-  print(purple('Entschuldigung. Das Programm kann diesen Text leider nicht knacken :('))
-
-
-def ask_if_decoded() -> bool:
-  answer = input(f'{underline('Sieht dieser Text wie ein deutscher Klartext aus?')} j/n: ')
+def fragen_ob_entschluesselt() -> bool:
+  antwort = input(f'{unterstrich('Sieht dieser Text wie ein deutscher Klartext aus?')} j/n: ')
 
   while True:  
-    if answer == 'j':
+    if antwort == 'j':
       return True
-    elif answer == 'n':
+    elif antwort == 'n':
       return False
     else:
-      answer = input(red('Bitte geben Sie entweder \'j\' oder \'n\' ein: '))
+      antwort = input(rot('Bitte geben Sie entweder \'j\' oder \'n\' ein: '))
 
 
-def get_filename() -> str:
-  window = tkinter.Tk()
-  window.wm_attributes('-topmost', 1)
-  window.withdraw()
+def dateiname_anfragen() -> str:
+  '''
+    Öffnet den Explorer, sodass der Benutzer eine Textdatei auswählen kann.
+    Gibt den Dateinamen aus.
+  '''
+  window = tkinter.Tk() # Initialisierung des Moduls
+  window.wm_attributes('-topmost', 1) # damit das Fenster immer oben bleibt
+  window.withdraw() # damit das Fenster beim Initialisieren nicht geöffnet wird
 
-  filename =  filedialog.askopenfilename(filetypes=[('Text-Datei', '*.txt',)])
-  if filename != '':
-    return filename
-  yes_or_no_interrupt(f'{red('Sie haben nichts gewählt.')} Wollen Sie noch einmal versuchen?')
-  return get_filename()
+  dateiname =  filedialog.askopenfilename(filetypes=[('Text-Datei', '*.txt',)])
+  if dateiname != '':
+    return dateiname
+  ja_oder_nein_unterbrechen(f'{rot('Sie haben nichts gewählt.')} Wollen Sie noch einmal versuchen?')
+  return dateiname_anfragen()
 
 
-def get_trimmed_text(text: str) -> str:
+def text_kürzen(text: str) -> str:
     '''
         Gibt die ersten 80 Symbolen aus dem Text aus.
     '''
     return text[:80] + '...' if len(text) > 80 else text
 
 
-def show_decoded_text(decoded_text: str):
-  print(background(get_trimmed_text(decoded_text)))
+def entschluesselt_text_anzeigen(decoded_text: str):
+  print(hintergrund(text_kürzen(decoded_text)))
+
+
+def erfolgreiche_entschlüsselung_anzeigen(passwort: str, dateiname: str):
+  print(f'Prima! Passwort: \'{gruen(passwort)}\'. Der entschlüsselte Text wurde in \'{unterstrich(dateiname)}\' gespeichert.')
+
+
+def sich_entschuldigen():
+  print(gelb('Entschuldigung. Das Programm kann diesen Text leider nicht knacken :('))

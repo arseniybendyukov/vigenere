@@ -1,12 +1,14 @@
 from typing import List
 
 
-# Der Koinzidenzindex für deutschsprachige Texte
-IC = 0.078
+# Der Koinzidenzindex (KI) wird oft in der Kryptographie angewendet,
+# um verschlüsselte oder unverständliche Texte auf sprachliche Eigenschaften zu untersuchen.
+# Der KI ist die Wahrscheinlichkeit, dass zwei zufällig aus dem Text gewählte Symbole gleich sind.
+KI = 0.078 # Der Koinzidenzindex für deutschsprachige Texte
 
 
 # Ä = AE, Ü = UE, Ö = OE, ẞ = SS
-LETTERS_FREQUENCIES = {
+BUCHSTABEN_HAEUFIGKEITEN = {
     "E": 0.1741,
     "N": 0.0978,
     "I": 0.0755,
@@ -36,158 +38,163 @@ LETTERS_FREQUENCIES = {
 }
 
 
-ALPHABET = ''.join(sorted(LETTERS_FREQUENCIES.keys()))
-MATRIX = None
+ALPHABET = ''.join(sorted(BUCHSTABEN_HAEUFIGKEITEN.keys()))
+VIGENERE_TABELLE = None
 
 
-def fill_vigenere_matrix():
+def vigenere_tabelle_fuellen():
     '''
-        Füllt die globale Variable `MATRIX` (Vigenere-Tabelle)
+        Füllt die globale Variable `VIGENERE_TABELLE`
     '''
-    global MATRIX
-    MATRIX = []
+    global VIGENERE_TABELLE
+    VIGENERE_TABELLE = []
     for i in range(len(ALPHABET)):
-        MATRIX.append([*ALPHABET[i:], *ALPHABET[:i]])
+        VIGENERE_TABELLE.append([*ALPHABET[i:], *ALPHABET[:i]])
 
 
-def get_clear_text(text: str) -> str:
+def text_normalisieren(text: str) -> str:
     '''
         Gibt den Text aus, der nur aus in `ALPHABET` enthaltenen Symbolen besteht.
     '''
     return ''.join([symbol.upper() if symbol.upper() in ALPHABET else '' for symbol in text])
 
 
-def encode_symbol_vigenere(text_symbol: str, password_symbol: str) -> str:
+def symbol_verschluesseln(text_symbol: str, passwort_symbol: str) -> str:
     '''
         Gibt nach Vigenere verschlüsseltes Symbol aus.
+        `text_symbol` und `passwort_symbol` müssen in `ALPHABET` enthalten sein.
     '''
     if text_symbol.upper() not in ALPHABET:
         raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {text_symbol}')
-    if password_symbol.upper() not in ALPHABET:
-        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {password_symbol}')
+    if passwort_symbol.upper() not in ALPHABET:
+        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {passwort_symbol}')
     i1 = ALPHABET.index(text_symbol.upper())
-    i2 = ALPHABET.index(password_symbol.upper())
-    text_symbol_encoded = MATRIX[i1][i2]
-    return text_symbol_encoded if text_symbol.isupper() else text_symbol_encoded.lower()
+    i2 = ALPHABET.index(passwort_symbol.upper())
+    verschluesselt_symbol = VIGENERE_TABELLE[i1][i2]
+    return verschluesselt_symbol if text_symbol.isupper() else verschluesselt_symbol.lower()
 
 
-def decode_symbol_vigenere(cipher_symbol: str, password_symbol: str) -> str:
+def symbol_entschluesseln(verschluesselt_symbol: str, passwort_symbol: str) -> str:
     '''
         Gibt nach Vigenere entschlüsseltes Symbol aus.
+        `verschluesselt_symbol` und `passwort_symbol` müssen in `ALPHABET` enthalten sein.
     '''
-    if cipher_symbol.upper() not in ALPHABET:
-        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {cipher_symbol}')
-    if password_symbol.upper() not in ALPHABET:
-        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {password_symbol}')
-    i1 = ALPHABET.index(password_symbol.upper())
-    i2 = MATRIX[i1].index(cipher_symbol.upper())
-    decoded_symbol = ALPHABET[i2]
-    return decoded_symbol if cipher_symbol.isupper() else decoded_symbol.lower()
+    if verschluesselt_symbol.upper() not in ALPHABET:
+        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {verschluesselt_symbol}')
+    if passwort_symbol.upper() not in ALPHABET:
+        raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {passwort_symbol}')
+    i1 = ALPHABET.index(passwort_symbol.upper())
+    i2 = VIGENERE_TABELLE[i1].index(verschluesselt_symbol.upper())
+    text_symbol = ALPHABET[i2]
+    return text_symbol if verschluesselt_symbol.isupper() else text_symbol.lower()
 
 
-def encode_text_vigenere(text: str, password: str) -> str:
+def text_verschluesseln(text: str, passwort: str) -> str:
     '''
         Gibt nach Vigenere verschlüsselten Text aus. Die in `ALPHABET` nicht enthaltene Symbole werden 'übersprungen'.
     '''
-    encoded = [*text]
-    non_alphabetic_symbols_count = 0
+    verschluesselt = [*text]
+    nicht_alphabetisch_symbole_anzahl = 0
     for i in range(len(text)):
         symbol = text[i]
         if symbol.upper() in ALPHABET:
-            symbol = encode_symbol_vigenere(
+            symbol = symbol_verschluesseln(
                 symbol,
-                password[(i - non_alphabetic_symbols_count) % len(password)],
+                passwort[(i - nicht_alphabetisch_symbole_anzahl) % len(passwort)],
             )
         else:
-            non_alphabetic_symbols_count += 1
-        encoded[i] = symbol
-    return ''.join(encoded)
+            nicht_alphabetisch_symbole_anzahl += 1
+        verschluesselt[i] = symbol
+    return ''.join(verschluesselt)
 
 
-def get_ic(text: str) -> int:
+def ki_berechnen(text: str) -> int:
     '''
         Gibt den Koinzidenzindex aus.
-        Der Koinzidenzindex ist die Summe von Wahrscheinlichkeiten,
-        dass die zwei zufällig aus dem Text gewählten Symbole gleich sind.
+        Der Koinzidenzindex ist die Summe von Wahrscheinlichkeiten, dass die zwei zufällig aus dem Text gewählten Symbole gleich sind.
         Funktioniert nur mit dem Text, der aus den in `ALPHABET` enthaltenen Symbolen besteht.
     '''
-    occurences = {letter: 0 for letter in ALPHABET}
+    buchstaben_vorkommen = {buchstabe: 0 for buchstabe in ALPHABET}
     for i in range(len(text)):
         symbol = text[i]
         if symbol.upper() not in ALPHABET:
             raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {symbol}')
-        occurences[symbol.upper()] += 1
-    letters_count = sum(occurences.values())
-    return sum([((frequency*(frequency-1)) / (letters_count*(letters_count-1))) for frequency in occurences.values()])
+        buchstaben_vorkommen[symbol.upper()] += 1
+    buchstaben_anzahl = sum(buchstaben_vorkommen.values())
+    return sum([((vorkommen*(vorkommen-1)) / (buchstaben_anzahl*(buchstaben_anzahl-1))) for vorkommen in buchstaben_vorkommen.values()])
     
 
-def get_avg_ic(text: str, password_length) -> int:
+def durchschn_ki_berechnen(text: str, passwort_laenge) -> int:
     '''
-        Gibt den durchschnittlichen Koinzidenzindex von `password_length` Symbolgruppen aus.
+        Gibt den durchschnittlichen Koinzidenzindex von `passwort_laenge` Symbolgruppen aus.
         Funktioniert nur mit dem Text, der aus den in `ALPHABET` enthaltenen Symbolen besteht.
     '''
-    return sum([get_ic(text[i::password_length]) for i in range(password_length)]) / password_length
+    return sum([ki_berechnen(text[i::passwort_laenge]) for i in range(passwort_laenge)]) / passwort_laenge
 
 
-def get_best_key_lengths(text: str) -> List[int]:
+def beste_passwort_laengen(text: str) -> List[int]:
     '''
-        Gibt die nach der Abweichung von IC sortierte Liste der Längen der Passwörter aus.
-        Die Länge des Passworts muss mindestens 100 Mal kürzer als die Länge des Textes sein (`1 <= len(password) <= len(text)/100`).
+        Gibt die nach der Abweichung von `KI` sortierte Liste der Längen der Passwörter aus.
+        Die Länge des Passworts muss mindestens 100 Mal kürzer als die Länge des Textes sein (`1 <= len(passwort) <= len(text)/100`).
     '''
-    text = get_clear_text(text)
-    password_lengths = []
-    for password_length in range(1, int(len(text) / 100)):
-        password_lengths.append({
-            'password_length': password_length,
-            'ic_difference': abs(IC - get_avg_ic(text, password_length)),
+    text = text_normalisieren(text)
+    passwort_laengen = []
+    for passwort_laenge in range(1, int(len(text) / 100)):
+        passwort_laengen.append({
+            'passwort_laenge': passwort_laenge,
+            'ki_abweichung': abs(KI - durchschn_ki_berechnen(text, passwort_laenge)),
         })
-    return map(lambda x: x['password_length'], sorted(password_lengths, key=lambda x: x['ic_difference']))
+    return list(map(
+        lambda x: x['passwort_laenge'],
+        sorted(passwort_laengen, key=lambda x: x['ki_abweichung'])
+    ))
 
 
-def get_caesar_shift(text: str) -> str:
+def caesar_verschiebung_ausrechnen(text: str) -> str:
     '''
         Gibt die Verschiebung des nach Caesar verschlüsselten Textes mithilfe des Chi-Quadrat-Tests aus.
+        Funktioniert nur mit dem Text, der aus den in `ALPHABET` enthaltenen Symbolen besteht.
     '''
-    occurences = [0]*len(ALPHABET)
+    buchstaben_vorkommen = [0]*len(ALPHABET)
     for i in range(len(text)):
         symbol = text[i]
         if symbol.upper() not in ALPHABET:
             raise ValueError(f'Es gibt ein Symbol, der nicht in ALPHABET enthalten ist: {symbol}')
-        occurences[ALPHABET.index(symbol.upper())] += 1
-    letters_count = len(text)
-    expected = [letters_count * LETTERS_FREQUENCIES[s] for s in ALPHABET]
-    errors = []
-    for shift in range(len(ALPHABET)):
-        error = 0
+        buchstaben_vorkommen[ALPHABET.index(symbol.upper())] += 1
+    buchstaben_anzahl = len(text)
+    erwartet = [buchstaben_anzahl * BUCHSTABEN_HAEUFIGKEITEN[s] for s in ALPHABET]
+    abweichungen = []
+    for caesar_verschiebung in range(len(ALPHABET)):
+        abweichung = 0
         for i in range(len(ALPHABET)):
-            error += ((expected[i] - occurences[(i + shift) % len(ALPHABET)]) ** 2) / expected[i]
-        errors.append(error)
-    return ALPHABET[errors.index(min(errors))]
+            abweichung += ((erwartet[i] - buchstaben_vorkommen[(i + caesar_verschiebung) % len(ALPHABET)]) ** 2) / erwartet[i]
+        abweichungen.append(abweichung)
+    return ALPHABET[abweichungen.index(min(abweichungen))]
 
 
-def get_vigenere_password(text: str, password_length: int) -> str:
+def passwort_ausrechnen(text: str, password_length: int) -> str:
     '''
         Gibt den Schlüssel für den nach Vigenere verschlüsselten Text aus.
         Funktioniert nur mit dem Text, der aus den in `ALPHABET` enthaltenen Symbolen besteht.
     '''
-    text = get_clear_text(text)
-    return ''.join([get_caesar_shift(text[i::password_length]) for i in range(password_length)])
+    text = text_normalisieren(text)
+    return ''.join([caesar_verschiebung_ausrechnen(text[i::password_length]) for i in range(password_length)])
 
 
-def decode_text_vigenere(text: str, password: str) -> str:
+def text_entschluesseln(text: str, passwort: str) -> str:
     '''
         Entschlüsselt den nach Vigenere verschlüsselten Text.
     '''
-    decoded = [*text]
-    non_alphabetic_symbols_count = 0
+    entschluesselt = [*text]
+    nicht_alphabetisch_symbole_anzahl = 0
     for i in range(len(text)):
         symbol = text[i]
         if symbol.upper() in ALPHABET:
-            symbol = decode_symbol_vigenere(
+            symbol = symbol_entschluesseln(
                 symbol,
-                password[(i - non_alphabetic_symbols_count) % len(password)],
+                passwort[(i - nicht_alphabetisch_symbole_anzahl) % len(passwort)],
             )
         else:
-            non_alphabetic_symbols_count += 1
-        decoded[i] = symbol
-    return ''.join(decoded)
+            nicht_alphabetisch_symbole_anzahl += 1
+        entschluesselt[i] = symbol
+    return ''.join(entschluesselt)

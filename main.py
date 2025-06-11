@@ -1,51 +1,51 @@
 import os
 from terminal import (
-  greet_user,
-  get_filename,
-  ask_if_decoded,
-  show_decoded_text,
-  show_successfull_decoding,
-  apologize,
+  benutzer_begruessen,
+  dateiname_anfragen,
+  fragen_ob_entschluesselt,
+  entschluesselt_text_anzeigen,
+  erfolgreiche_entschlüsselung_anzeigen,
+  sich_entschuldigen,
 )
 from vigenere import (
-  fill_vigenere_matrix,
-  get_best_key_lengths,
-  get_vigenere_password,
-  decode_text_vigenere,
+  vigenere_tabelle_fuellen,
+  beste_passwort_laengen,
+  passwort_ausrechnen,
+  text_entschluesseln,
 )
 
 
-DECODED_TEXT_FILENAME = 'entschluesselt.txt'
+ENTSCHLUESSELT_DATEINAME = 'entschluesselt.txt'
 
 
 def main():
-  fill_vigenere_matrix()
+  vigenere_tabelle_fuellen()
 
-  greet_user()
+  benutzer_begruessen()
 
   try:
-    filename = get_filename()
+    dateiname = dateiname_anfragen()
   except:
     return
   
-  with open(filename, 'r') as encoded_file:
-    encoded_text = encoded_file.read()
+  with open(dateiname, 'r') as verschluesselt_datei:
+    verschluesselt_text = verschluesselt_datei.read()
 
-    for password_length in get_best_key_lengths(encoded_text):
-      password = get_vigenere_password(encoded_text, password_length)
-      decoded_text = decode_text_vigenere(encoded_text, password)
-      show_decoded_text(decoded_text)
+    for passwort_laenge in beste_passwort_laengen(verschluesselt_text):
+      passwort = passwort_ausrechnen(verschluesselt_text, passwort_laenge)
+      entschluesselt_text = text_entschluesseln(verschluesselt_text, passwort)
+      entschluesselt_text_anzeigen(entschluesselt_text)
 
-      answer = ask_if_decoded()
+      antwort = fragen_ob_entschluesselt()
 
-      if answer:
+      if antwort:
         # Speichert den entschlüsselten Text in eine Datei im aktuellen Ordner
-        with open(os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), DECODED_TEXT_FILENAME), 'w') as decoded_file:
-          decoded_file.writelines(decoded_text)
-        show_successfull_decoding(password, DECODED_TEXT_FILENAME)
+        with open(os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), ENTSCHLUESSELT_DATEINAME), 'w') as entschluesselt_datei:
+          entschluesselt_datei.writelines(entschluesselt_text)
+        erfolgreiche_entschlüsselung_anzeigen(passwort, ENTSCHLUESSELT_DATEINAME)
         break
     else:
-      apologize()
+      sich_entschuldigen()
 
 
 if __name__ == '__main__':
