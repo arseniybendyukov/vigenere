@@ -1,3 +1,4 @@
+import os
 import tkinter
 from tkinter import filedialog
 
@@ -76,6 +77,16 @@ def dateiname_anfragen() -> str:
     return dateiname
   ja_oder_nein_unterbrechen(f'{rot('Sie haben nichts gewählt.')} Wollen Sie noch einmal versuchen?')
   return dateiname_anfragen()
+
+
+def entschluesselt_dateipfad(dateiname: str) -> str:
+  '''
+    Gibt den absoluten Pfad der Datei mit dem Namen `dateiname` im aktuellen Ordner.
+  '''
+  return os.path.join(
+    os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))),
+    dateiname
+  )
 
 
 def text_kürzen(text: str) -> str:

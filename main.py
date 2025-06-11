@@ -1,8 +1,8 @@
-import os
 from terminal import (
   benutzer_begruessen,
   dateiname_anfragen,
   fragen_ob_entschluesselt,
+  entschluesselt_dateipfad,
   entschluesselt_text_anzeigen,
   erfolgreiche_entschlüsselung_anzeigen,
   sich_entschuldigen,
@@ -40,7 +40,7 @@ def main():
 
       if antwort:
         # Speichert den entschlüsselten Text in eine Datei im aktuellen Ordner
-        with open(os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), ENTSCHLUESSELT_DATEINAME), 'w') as entschluesselt_datei:
+        with open(entschluesselt_dateipfad(ENTSCHLUESSELT_DATEINAME), 'w') as entschluesselt_datei:
           entschluesselt_datei.writelines(entschluesselt_text)
         erfolgreiche_entschlüsselung_anzeigen(passwort, ENTSCHLUESSELT_DATEINAME)
         break
