@@ -88,6 +88,8 @@ def output_dateiname_anfragen(initialfile=None) -> str:
     Öffnet den Explorer, sodass der Benutzer eine Output-Textdatei auswählen kann.
     Gibt den Dateinamen aus.
   '''
+  print('Bitte wählen sie eine Output-Datei.')
+
   window = tkinter.Tk() # Initialisierung des Moduls
   window.wm_attributes('-topmost', 1) # damit das Fenster immer oben bleibt
   window.withdraw() # damit das Fenster beim Initialisieren nicht geöffnet wird
