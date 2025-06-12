@@ -63,30 +63,45 @@ def fragen_ob_entschluesselt() -> bool:
       antwort = input(rot('Bitte geben Sie entweder \'j\' oder \'n\' ein: '))
 
 
-def dateiname_anfragen() -> str:
+def input_dateiname_anfragen() -> str:
   '''
-    Öffnet den Explorer, sodass der Benutzer eine Textdatei auswählen kann.
+    Öffnet den Explorer, sodass der Benutzer eine Input-Textdatei auswählen kann.
     Gibt den Dateinamen aus.
   '''
   window = tkinter.Tk() # Initialisierung des Moduls
   window.wm_attributes('-topmost', 1) # damit das Fenster immer oben bleibt
   window.withdraw() # damit das Fenster beim Initialisieren nicht geöffnet wird
 
-  dateiname =  filedialog.askopenfilename(filetypes=[('Text-Datei', '*.txt',)])
+  dateiname =  filedialog.askopenfilename(
+    title='Textdatei auswählen...',
+    defaultextension='.txt',
+    filetypes=[('Text-Datei', '*.txt',)]
+  )
   if dateiname != '':
     return dateiname
   ja_oder_nein_unterbrechen(f'{rot('Sie haben nichts gewählt.')} Wollen Sie noch einmal versuchen?')
-  return dateiname_anfragen()
+  return input_dateiname_anfragen()
 
 
-def entschluesselt_dateipfad(dateiname: str) -> str:
+def output_dateiname_anfragen(initialfile=None) -> str:
   '''
-    Gibt den absoluten Pfad der Datei mit dem Namen `dateiname` im aktuellen Ordner.
+    Öffnet den Explorer, sodass der Benutzer eine Output-Textdatei auswählen kann.
+    Gibt den Dateinamen aus.
   '''
-  return os.path.join(
-    os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))),
-    dateiname
+  window = tkinter.Tk() # Initialisierung des Moduls
+  window.wm_attributes('-topmost', 1) # damit das Fenster immer oben bleibt
+  window.withdraw() # damit das Fenster beim Initialisieren nicht geöffnet wird
+
+  dateiname =  filedialog.asksaveasfilename(
+    title='Speichern unter...',
+    defaultextension='.txt',
+    initialfile=initialfile,
+    filetypes=[('Text-Datei', '*.txt',)]
   )
+  if dateiname != '':
+    return dateiname
+  ja_oder_nein_unterbrechen(f'{rot('Sie haben nichts gewählt.')} Wollen Sie noch einmal versuchen?')
+  return output_dateiname_anfragen()
 
 
 def text_kürzen(text: str) -> str:

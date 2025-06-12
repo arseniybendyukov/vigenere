@@ -1,8 +1,8 @@
 from terminal import (
   benutzer_begruessen,
-  dateiname_anfragen,
+  input_dateiname_anfragen,
+  output_dateiname_anfragen,
   fragen_ob_entschluesselt,
-  entschluesselt_dateipfad,
   entschluesselt_text_anzeigen,
   erfolgreiche_entschlüsselung_anzeigen,
   sich_entschuldigen,
@@ -16,7 +16,7 @@ from vigenere import (
 
 
 # Der Name der Datei, in die der entschlüsselte Text gespeichert wird 
-ENTSCHLUESSELT_DATEINAME = 'entschluesselt.txt'
+DEFAULT_ENTSCHLUESSELT_DATEINAME = 'entschluesselt.txt'
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
   benutzer_begruessen()
 
   try:
-    dateiname = dateiname_anfragen()
+    dateiname = input_dateiname_anfragen()
   except:
     return
   
@@ -40,10 +40,13 @@ def main():
       antwort = fragen_ob_entschluesselt()
 
       if antwort:
-        # Speichert den entschlüsselten Text in eine Datei im aktuellen Ordner
-        with open(entschluesselt_dateipfad(ENTSCHLUESSELT_DATEINAME), 'w') as entschluesselt_datei:
+        try:
+          dateiname = output_dateiname_anfragen(DEFAULT_ENTSCHLUESSELT_DATEINAME)
+        except:
+          return
+        with open(dateiname, 'w') as entschluesselt_datei:
           entschluesselt_datei.writelines(entschluesselt_text)
-        erfolgreiche_entschlüsselung_anzeigen(passwort, ENTSCHLUESSELT_DATEINAME)
+        erfolgreiche_entschlüsselung_anzeigen(passwort, dateiname)
         break
     else:
       sich_entschuldigen()
