@@ -25,11 +25,11 @@ def main():
   benutzer_begruessen()
 
   try:
-    dateiname = input_dateiname_anfragen()
+    input_dateiname = input_dateiname_anfragen()
   except:
     return
   
-  with open(dateiname, 'r') as verschluesselt_datei:
+  with open(input_dateiname, 'r') as verschluesselt_datei:
     verschluesselt_text = verschluesselt_datei.read()
 
     for passwort_laenge in beste_passwort_laengen(verschluesselt_text):
@@ -41,12 +41,12 @@ def main():
 
       if antwort:
         try:
-          dateiname = output_dateiname_anfragen(DEFAULT_ENTSCHLUESSELT_DATEINAME)
+          output_dateiname = output_dateiname_anfragen(DEFAULT_ENTSCHLUESSELT_DATEINAME)
         except:
           return
-        with open(dateiname, 'w') as entschluesselt_datei:
+        with open(output_dateiname, 'w') as entschluesselt_datei:
           entschluesselt_datei.writelines(entschluesselt_text)
-        erfolgreiche_entschlüsselung_anzeigen(passwort, dateiname)
+        erfolgreiche_entschlüsselung_anzeigen(passwort, output_dateiname)
         break
     else:
       sich_entschuldigen()
